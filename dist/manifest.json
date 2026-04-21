@@ -4,7 +4,7 @@
   "description": "Governance skill para fluxo de Pull Requests — max 2 abertos, CI obrigatorio, labels, branch protection, preflight git-state.",
   "author": "Ian Vilhena <ianvilhena99@gmail.com>",
   "artifact": "pr-flow.skill",
-  "artifact_sha256": "7464c67dfa8eba3ba0fcd184453036f8e5c193b3782d15f2ec8aeb50c0a09808",
+  "artifact_sha256": "a10b477b5983ba34d65859419bb4c65b589617871af515f5bdda39c96c83e9c2",
   "install_target": "~/.claude/skills/pr-flow",
   "required_tools": ["gh", "python3", "tar", "git"],
   "optional_dependencies": [
