@@ -1,0 +1,47 @@
+name: PR Limit
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+# Alerta quando o total de PRs abertos passa do limite da skill pr-flow
+# (default: 2). Falha o check nos PRs alem do limite — forca o autor a
+# drenar a fila antes de pedir review.
+
+jobs:
+  enforce-limit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Count open PRs
+        id: count
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAX=2
+          OPEN=$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq 'length')
+          echo "open=$OPEN"   >> "$GITHUB_OUTPUT"
+          echo "max=$MAX"     >> "$GITHUB_OUTPUT"
+          echo "Abertos: $OPEN | Maximo: $MAX"
+
+      - name: Comment if over limit
+        if: ${{ fromJSON(steps.count.outputs.open) > fromJSON(steps.count.outputs.max) }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --repo "${{ github.repository }}" \
+            --body "## PR-FLOW FAIL-CLOSED
+
+          Este repo esta com **${{ steps.count.outputs.open }} PRs abertos** (limite: ${{ steps.count.outputs.max }}).
+
+          Politica (pr-flow skill): maximo 2 PRs abertos simultaneos. Drene a fila antes de pedir review deste.
+
+          Acao esperada:
+          - mergear ou fechar PRs existentes ate atingir o limite
+          - apos normalizar, re-executar este check via \`gh workflow run\`"
+
+      - name: Fail check if over limit
+        if: ${{ fromJSON(steps.count.outputs.open) > fromJSON(steps.count.outputs.max) }}
+        run: |
+          echo "::error::Limite de 2 PRs abertos excedido. Drene a fila."
+          exit 1
