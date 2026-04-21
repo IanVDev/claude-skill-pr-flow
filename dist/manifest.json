@@ -1,0 +1,22 @@
+{
+  "name": "pr-flow",
+  "version": "1.0.0",
+  "description": "Governance skill para fluxo de Pull Requests — max 2 abertos, CI obrigatorio, labels, branch protection, preflight git-state.",
+  "author": "Ian Vilhena <ianvilhena99@gmail.com>",
+  "artifact": "pr-flow.skill",
+  "artifact_sha256": "a10b477b5983ba34d65859419bb4c65b589617871af515f5bdda39c96c83e9c2",
+  "install_target": "~/.claude/skills/pr-flow",
+  "required_tools": ["gh", "python3", "tar", "git"],
+  "optional_dependencies": [
+    "orbit-engine (localhost:9100) — rastreabilidade fail-closed"
+  ],
+  "entrypoints": {
+    "check":             "scripts/check.sh",
+    "apply":             "scripts/apply.sh",
+    "preflight-commit":  "scripts/preflight-commit.sh"
+  },
+  "limits": {
+    "max_open_prs_per_repo": 2,
+    "max_lines_for_small_pr": 200
+  }
+}

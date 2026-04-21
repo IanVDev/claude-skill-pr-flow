@@ -1,0 +1,17 @@
+[
+  {
+    "name": "ready-to-merge",
+    "color": "0e8a16",
+    "description": "CI verde + review aprovada — qualquer mantenedor pode mergear"
+  },
+  {
+    "name": "blocked",
+    "color": "b60205",
+    "description": "Aguardando dependencia externa (rotacao de secret, endpoint, etc.) — NAO mergear"
+  },
+  {
+    "name": "needs-review",
+    "color": "fbca04",
+    "description": "Precisa de olhar humano — aberto, nao urgente"
+  }
+]

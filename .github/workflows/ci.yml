@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shellcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y shellcheck
+          shellcheck src/scripts/*.sh dist/install.sh dist/uninstall.sh
+
+      - name: Validar YAML da skill
+        run: |
+          python3 -c "import yaml; yaml.safe_load(open('src/skill.yaml'))"
+
+      - name: Validar manifest.json
+        run: |
+          python3 -c "import json; d=json.load(open('dist/manifest.json')); assert 'artifact_sha256' in d; assert 'version' in d"
+
+      - name: Verificar checksum de dist/pr-flow.skill
+        run: |
+          EXPECTED=$(python3 -c "import json;print(json.load(open('dist/manifest.json'))['artifact_sha256'])")
+          ACTUAL=$(shasum -a 256 dist/pr-flow.skill | awk '{print $1}')
+          if [ "$EXPECTED" != "$ACTUAL" ]; then
+            echo "::error::checksum do dist/pr-flow.skill nao bate com manifest.json"
+            echo "  esperado: $EXPECTED"
+            echo "  atual:    $ACTUAL"
+            exit 1
+          fi
+          echo "checksum OK: $ACTUAL"
+
+      - name: Verificar que dist/pr-flow.skill descompacta corretamente
+        run: |
+          mkdir -p /tmp/pr-flow-test
+          tar xzf dist/pr-flow.skill -C /tmp/pr-flow-test
+          test -f /tmp/pr-flow-test/pr-flow/skill.md
+          test -f /tmp/pr-flow-test/pr-flow/skill.yaml
+          test -x /tmp/pr-flow-test/pr-flow/scripts/check.sh || chmod +x /tmp/pr-flow-test/pr-flow/scripts/*.sh
+          echo "tarball OK"
