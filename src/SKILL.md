@@ -88,7 +88,7 @@ Fail-closed se backend orbit-engine nao responder.
 
 ```
 ~/.claude/skills/pr-flow/
-├── skill.md                          # este arquivo
+├── SKILL.md                          # entrypoint detectado pelo Claude Code
 ├── skill.yaml                        # metadata estruturado
 ├── policies/
 │   ├── pr-policy.md                  # politica para a equipe
