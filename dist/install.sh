@@ -19,7 +19,7 @@ echo "    OK: $ACTUAL"
 echo "==> Instalando em $INSTALL_DIR"
 mkdir -p "$HOME/.claude/skills"
 rm -rf "$INSTALL_DIR"
-tar xzf "$SKILL_FILE" -C "$HOME/.claude/skills/"
+unzip -q "$SKILL_FILE" -d "$HOME/.claude/skills/"
 
 echo ""
 echo "pr-flow instalada em $INSTALL_DIR"

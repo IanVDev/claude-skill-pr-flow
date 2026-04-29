@@ -114,12 +114,17 @@ Ver [src/policies/pr-policy.md](src/policies/pr-policy.md) e [src/policies/merge
 
 ### Regenerar `dist/pr-flow.skill` localmente
 
+O artefato `.skill` é um **ZIP** (exigido pelo importador do Claude Code):
+
 ```bash
-cd src && tar czf ../dist/pr-flow.skill --transform 's|^|pr-flow/|' \
-  SKILL.md skill.yaml policies templates scripts
+mkdir -p /tmp/skill-build/pr-flow
+cp -r src/SKILL.md src/skill.yaml src/policies src/templates src/scripts \
+  /tmp/skill-build/pr-flow/
+cd /tmp/skill-build && zip -r pr-flow.skill pr-flow/
+cp /tmp/skill-build/pr-flow.skill dist/pr-flow.skill
 # atualize manifest.json com novo sha:
-SHA=$(shasum -a 256 ../dist/pr-flow.skill | awk '{print $1}')
-python3 -c "import json; m=json.load(open('../dist/manifest.json')); m['artifact_sha256']='$SHA'; json.dump(m, open('../dist/manifest.json','w'), indent=2)"
+SHA=$(shasum -a 256 dist/pr-flow.skill | awk '{print $1}')
+python3 -c "import json; m=json.load(open('dist/manifest.json')); m['artifact_sha256']='$SHA'; json.dump(m, open('dist/manifest.json','w'), indent=2)"
 ```
 
 CI (`ci.yml`) valida que o `artifact_sha256` do `manifest.json` bate com o tarball commitado — se esquecer de atualizar, o check falha.
