@@ -1,10 +1,10 @@
 {
   "name": "pr-flow",
-  "version": "1.1.0",
-  "description": "Governance skill para fluxo de Pull Requests \u2014 CI obrigatorio, labels, branch protection, preflight git-state, alerta de acumulo de PRs.",
+  "version": "1.1.1",
+  "description": "Governance skill para fluxo de Pull Requests — CI obrigatorio, labels, branch protection, preflight git-state, alerta de acumulo de PRs. Triggering otimizado.",
   "author": "Ian Vilhena <ianvilhena99@gmail.com>",
   "artifact": "pr-flow.skill",
-  "artifact_sha256": "f253d3bb02fd72c902bd8499e20e13346c29d5392d40172e8b52a35cf97d0be6",
+  "artifact_sha256": "bfab5ad0c8f43d25724063815a16a80b5cd4a83095950f0da571584016fb90c3",
   "install_target": "~/.claude/skills/pr-flow",
   "required_tools": [
     "gh",
@@ -13,7 +13,7 @@
     "git"
   ],
   "optional_dependencies": [
-    "orbit-engine (localhost:9100) \u2014 rastreabilidade fail-closed"
+    "orbit-engine (localhost:9100) — rastreabilidade fail-closed"
   ],
   "entrypoints": {
     "check": "scripts/check.sh",

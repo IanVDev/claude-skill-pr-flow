@@ -1,10 +1,14 @@
 ---
 name: pr-flow
 description: >
-  Governance skill para fluxo de Pull Requests. Impoe: CI verde obrigatorio
-  antes do merge, labels padronizadas, branch protection e checagem de
-  git-state antes de commit (evita commit em branch errada). Alerta sobre
-  acumulo de PRs. Fail-closed em violacoes de governanca real.
+  Governance de Pull Requests: CI obrigatório, labels padronizadas, branch
+  protection, preflight git-state e alerta de acúmulo. Use esta skill sempre
+  que o usuário mencionar abrir PR, fazer commit, mergear branch, criar PR,
+  revisar PR, branch protection, labels de PR, fluxo de PR, "posso commitar",
+  "vou abrir um PR", "quero mergear", "tem PR aberto", "branch errada", ou
+  qualquer situação de governança de código em repositório Git/GitHub. Dispare
+  também quando houver risco de commit em branch protegida ou acúmulo de PRs
+  sem merge. Fail-closed em violações reais de governança.
 ---
 
 # pr-flow Skill

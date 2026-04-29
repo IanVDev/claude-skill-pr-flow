@@ -4,6 +4,8 @@ Claude Code skill para governança de Pull Requests. Impõe disciplina de fluxo 
 
 > **Fail-closed por design.** Violação de regra de governança bloqueia a operação com diagnóstico claro. Nada passa silenciosamente.
 
+**Versão atual:** `v1.1.1` — triggering otimizado para detecção automática + ação `team-message` documentada como entrypoint de comunicação padronizada.
+
 ## O que a skill resolve
 
 Cenário real que motivou a criação: 5 PRs abertos simultaneamente em um repo, nenhuma label, CI opcional, dev commita em `develop` por engano. Tempo de revisão infla, conflitos de merge aparecem, releases travam.
@@ -18,6 +20,7 @@ A `pr-flow` impõe:
 | **Labels padronizadas** (`ready-to-merge`, `blocked`, `needs-review`) | Criadas via `gh label create --force` |
 | **Squash merge** | Histórico linear |
 | Preflight **anti commit em branch errada** | `preflight-commit.sh` fail-closed em `main`/`develop` |
+| **Comunicação padronizada** ao time após PR | `team-message` — template estruturado via skill |
 
 ## Instalação rápida
 
@@ -58,11 +61,15 @@ Cria 3 labels, aplica branch protection em `main` e `develop`, imprime próximos
 # fail-closed em main/develop, avisa conflitos com PRs ativos
 ```
 
-## Template de mensagem para o time
+### Após abrir ou finalizar um PR (team-message)
 
-Após abrir ou finalizar um PR, use o template em
+A ação `team-message` gera mensagem estruturada para comunicar o PR ao time. Basta pedir ao Claude:
+
+> "pr-flow team-message para este PR"
+
+O Claude usa o template em
 [src/templates/team-pr-message-template.md](src/templates/team-pr-message-template.md)
-para comunicar o time de forma padronizada.
+e preenche automaticamente com contexto do PR aberto.
 
 O template cobre:
 - Título e URL do PR
@@ -125,14 +132,14 @@ Release é **manual** (não automatizado) — mantém visibilidade de quem publi
 # 1. bump de versão em src/skill.yaml e dist/manifest.json
 # 2. regenere dist/ (ver acima) e commit
 # 3. tag + push
-git tag v1.1.0 && git push --tags
+git tag v1.1.1 && git push --tags
 # 4. criar release com assets:
-gh release create v1.1.0 \
+gh release create v1.1.1 \
   dist/pr-flow.skill \
   dist/manifest.json \
   dist/install.sh \
   dist/INSTALL.md \
-  --title "pr-flow v1.1.0" \
+  --title "pr-flow v1.1.1" \
   --notes "<changelog>"
 ```
 
