@@ -1,22 +1,27 @@
 {
   "name": "pr-flow",
-  "version": "1.0.0",
-  "description": "Governance skill para fluxo de Pull Requests — max 2 abertos, CI obrigatorio, labels, branch protection, preflight git-state.",
+  "version": "1.1.0",
+  "description": "Governance skill para fluxo de Pull Requests \u2014 CI obrigatorio, labels, branch protection, preflight git-state, alerta de acumulo de PRs.",
   "author": "Ian Vilhena <ianvilhena99@gmail.com>",
   "artifact": "pr-flow.skill",
-  "artifact_sha256": "a10b477b5983ba34d65859419bb4c65b589617871af515f5bdda39c96c83e9c2",
+  "artifact_sha256": "f253d3bb02fd72c902bd8499e20e13346c29d5392d40172e8b52a35cf97d0be6",
   "install_target": "~/.claude/skills/pr-flow",
-  "required_tools": ["gh", "python3", "tar", "git"],
+  "required_tools": [
+    "gh",
+    "python3",
+    "tar",
+    "git"
+  ],
   "optional_dependencies": [
-    "orbit-engine (localhost:9100) — rastreabilidade fail-closed"
+    "orbit-engine (localhost:9100) \u2014 rastreabilidade fail-closed"
   ],
   "entrypoints": {
-    "check":             "scripts/check.sh",
-    "apply":             "scripts/apply.sh",
-    "preflight-commit":  "scripts/preflight-commit.sh"
+    "check": "scripts/check.sh",
+    "apply": "scripts/apply.sh",
+    "preflight-commit": "scripts/preflight-commit.sh"
   },
   "limits": {
-    "max_open_prs_per_repo": 2,
-    "max_lines_for_small_pr": 200
+    "max_lines_for_small_pr": 200,
+    "pr_accumulation_warn_threshold": 5
   }
 }

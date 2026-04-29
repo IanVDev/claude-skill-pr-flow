@@ -49,7 +49,7 @@ for branch in main develop; do
 done
 
 # ---------------------------------------------------------------------------
-# 3) Arquivos no repo: PR template + workflow pr-limit
+# 3) Arquivos no repo: PR template
 # ---------------------------------------------------------------------------
 cat <<EOF
 
@@ -60,18 +60,14 @@ Copie os arquivos abaixo para o repo em uma branch 'chore/pr-governance':
   \$REPO_ROOT/.github/PULL_REQUEST_TEMPLATE.md
     <- $SKILL_DIR/templates/PULL_REQUEST_TEMPLATE.md
 
-  \$REPO_ROOT/.github/workflows/pr-limit.yml
-    <- $SKILL_DIR/workflows/pr-limit.yml
-
   \$REPO_ROOT/docs/CONTRIBUTING.md
     <- $SKILL_DIR/policies/pr-policy.md
 
 Comando rapido (dentro do repo, branch nova):
-  mkdir -p .github/workflows docs
+  mkdir -p .github docs
   cp $SKILL_DIR/templates/PULL_REQUEST_TEMPLATE.md .github/
-  cp $SKILL_DIR/workflows/pr-limit.yml .github/workflows/
   cp $SKILL_DIR/policies/pr-policy.md docs/CONTRIBUTING.md
-  git add .github docs && git commit -m "chore(governance): pr-flow templates + workflow"
+  git add .github docs && git commit -m "chore(governance): pr-flow template + policy"
 EOF
 
 # ---------------------------------------------------------------------------

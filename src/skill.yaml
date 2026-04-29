@@ -1,16 +1,17 @@
 name: pr-flow
 description: >
-  Governance de PR: maximo 2 abertos, CI obrigatorio, labels padrao, branch
-  protection, preflight git-state. Fail-closed em violacao.
-version: "1.0.0"
+  Governance de PR: CI obrigatorio, labels padrao, branch protection,
+  preflight git-state, alerta de acumulo de PRs. Fail-closed em violacao
+  de governanca real.
+version: "1.1.0"
 
 actions:
   check:
-    description: Verifica se pode abrir novo PR (<2 abertos + branch OK)
+    description: Verifica branch, alerta acumulo de PRs (>=5), bloqueia branch errada
     entrypoint: scripts/check.sh
     fail_closed: true
   apply:
-    description: Instala governance em um repo (labels + protection + template + workflow)
+    description: Instala governance em um repo (labels + protection + template)
     entrypoint: scripts/apply.sh
     fail_closed: true
   preflight-commit:
@@ -19,7 +20,7 @@ actions:
     fail_closed: true
 
 limits:
-  max_open_prs_per_repo: 2
+  pr_accumulation_warn_threshold: 5
   max_lines_for_small_pr: 200
   hotfix_override: requires_explicit_user_authorization
 
@@ -41,7 +42,6 @@ branch_protection:
   require_conversation_resolution: true
 
 fail_closed:
-  on_over_limit: abort
   on_branch_main_or_develop: abort
   on_ci_not_green: abort
   on_orbit_engine_unreachable: abort
