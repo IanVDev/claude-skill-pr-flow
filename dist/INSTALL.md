@@ -47,14 +47,15 @@ Apos instalar, **reinicie o Claude Code** para que a skill seja detectada.
 
 Cria labels `ready-to-merge`, `blocked`, `needs-review`, aplica branch
 protection em `main` e `develop`, imprime instrucoes para copiar o
-template de PR e o workflow `pr-limit.yml`.
+template de PR.
 
 ### Antes de abrir um novo PR
 
 ```bash
 ~/.claude/skills/pr-flow/scripts/check.sh
-# PR-FLOW OK   — pode abrir
-# PR-FLOW FAIL-CLOSED — drene a fila primeiro
+# PR-FLOW OK          — pode abrir
+# PR-FLOW WARN        — fila com muitos PRs, revise antes de abrir
+# PR-FLOW FAIL-CLOSED — branch errada ou risco de governanca
 ```
 
 ### Antes de qualquer `git commit`
@@ -82,4 +83,4 @@ template de PR e o workflow `pr-limit.yml`.
 
 ## Versoes
 
-Atual: 1.0.0 (veja `manifest.json`).
+Atual: 1.1.0 (veja `manifest.json`).

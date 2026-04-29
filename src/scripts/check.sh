@@ -2,16 +2,18 @@
 # pr-flow: check — verifica se pode abrir novo PR.
 #
 # Fail-closed se:
-#   - ja ha >= 2 PRs abertos no repo
 #   - branch atual eh main ou develop
 #   - HEAD eh o mesmo de uma branch ja com PR aberto
+#
+# Aviso (nao bloqueia) se:
+#   - ha >= 5 PRs abertos no repo
 #
 # Uso: check.sh [owner/repo]
 # Se owner/repo omitido, usa o remote origin do diretorio atual.
 
 set -euo pipefail
 
-MAX_OPEN=2
+WARN_THRESHOLD=5
 REPO="${1:-}"
 if [ -z "$REPO" ]; then
   REPO=$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true)
@@ -22,13 +24,12 @@ if [ -z "$REPO" ]; then
   exit 2
 fi
 
-# 1) Conta PRs abertos
+# 1) Conta PRs abertos — alerta informativo se acumulo alto, nao bloqueia
 OPEN=$(gh pr list --repo "$REPO" --state open --json number --jq 'length')
-if [ "$OPEN" -ge "$MAX_OPEN" ]; then
-  echo "PR-FLOW FAIL-CLOSED" >&2
-  echo "Motivo: $OPEN PRs abertos em $REPO (limite: $MAX_OPEN)." >&2
-  echo "Acao: merge ou close um PR existente antes de abrir outro." >&2
-  exit 1
+if [ "$OPEN" -ge "$WARN_THRESHOLD" ]; then
+  echo "PR-FLOW WARN" >&2
+  echo "Aviso: $OPEN PRs abertos em $REPO." >&2
+  echo "Recomendacao: revise a fila e mergear ou fechar PRs travados antes de abrir novos." >&2
 fi
 
 # 2) Checa branch atual (apenas se estamos em repo git)
@@ -52,5 +53,5 @@ fi
 echo "PR-FLOW OK"
 echo "  repo: $REPO"
 echo "  branch: $BRANCH"
-echo "  open_prs: $OPEN / $MAX_OPEN"
+echo "  open_prs: $OPEN"
 exit 0

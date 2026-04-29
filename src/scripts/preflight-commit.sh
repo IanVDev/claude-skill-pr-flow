@@ -44,10 +44,10 @@ echo "PR-FLOW preflight-commit"
 echo "  branch atual:   $BRANCH"
 echo "  ultimo commit:  $(git log -1 --pretty=oneline --abbrev-commit)"
 echo "  staged files:"
-echo "$STAGED" | sed 's/^/    /'
+while IFS= read -r f; do echo "    $f"; done <<< "$STAGED"
 if [ -n "$UNSTAGED" ]; then
   echo "  AVISO — arquivos modificados nao staged:"
-  echo "$UNSTAGED" | sed 's/^/    /'
+  while IFS= read -r f; do echo "    $f"; done <<< "$UNSTAGED"
 fi
 
 # Cruzamento com PRs abertos — alerta se um PR ativo usa branch que contem

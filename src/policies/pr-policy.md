@@ -7,11 +7,12 @@ rapido quando o CI valida. Fluxo continuo > burocracia.
 
 ## Regras
 
-### 1. Maximo 2 PRs abertos simultaneos por desenvolvedor por repo
+### 1. Sem limite fixo de PRs abertos — atenção ao acúmulo
 
-- Antes de abrir um terceiro, merge/close um existente.
-- Hotfix de producao autorizado pelo tech lead pode estourar — registre o
-  motivo no body do PR.
+- A skill alerta quando há 5 ou mais PRs abertos simultaneamente.
+- O alerta é informativo: não bloqueia a operação.
+- Ao receber o alerta, revise a fila: mergear ou fechar PRs travados antes
+  de abrir novos reduz conflitos e mantém o fluxo.
 
 ### 2. Small PR first
 
@@ -50,13 +51,14 @@ rapido quando o CI valida. Fluxo continuo > burocracia.
 
 ## Violacoes
 
-O workflow `pr-limit.yml` comenta nos PRs quando o limite eh estourado e
-falha o check. Ate o limite normalizar, nao se mergea nada novo.
+A skill bloqueia apenas riscos reais de governança (branch errada, CI
+ausente, branch protection ausente, review obrigatória ausente, estado git
+inseguro). Acúmulo de PRs gera alerta informativo — não bloqueia.
 
 ## Exemplo pratico
 
 Cenario real observado (20/04/2026):
-- 5 PRs abertos simultaneos — violacao da regra 1.
+- 5 PRs abertos simultaneos — alerta de acumulo emitido.
 - Nenhuma label aplicada — nao da para priorizar.
 - CI nao configurado como obrigatorio — risco de merge quebrado.
 
@@ -66,5 +68,4 @@ Correcao aplicada:
 3. PR #4 entra apos #2.
 4. PR #5 entra por ultimo.
 
-A partir desse ponto, regra de 2 ja valia — PR #6 (governance) entra
-como unico aberto.
+PR #6 (governance) entrou como unico aberto — fila drenada.

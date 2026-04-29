@@ -2,7 +2,7 @@
 
 Claude Code skill para governança de Pull Requests. Impõe disciplina de fluxo contínuo em vez de burocracia de revisão.
 
-> **Fail-closed por design.** Violação de regra bloqueia a operação com diagnóstico claro. Nada passa silenciosamente.
+> **Fail-closed por design.** Violação de regra de governança bloqueia a operação com diagnóstico claro. Nada passa silenciosamente.
 
 ## O que a skill resolve
 
@@ -12,12 +12,12 @@ A `pr-flow` impõe:
 
 | Regra | Como |
 |---|---|
-| Máx **2 PRs abertos** por repo | Workflow `pr-limit.yml` comenta + falha o check no 3º PR |
+| **Sem limite fixo de PRs.** Alerta quando ≥ 5 abertos | `check.sh` emite aviso informativo (não bloqueia) |
 | **CI verde obrigatório** antes do merge | Branch protection em `main` e `develop` |
 | **1 review aprovada** mínima | Branch protection |
 | **Labels padronizadas** (`ready-to-merge`, `blocked`, `needs-review`) | Criadas via `gh label create --force` |
 | **Squash merge** | Histórico linear |
-| Preflight **anti commit em branch errada** | `preflight-commit.sh` fail-close em `main`/`develop` |
+| Preflight **anti commit em branch errada** | `preflight-commit.sh` fail-closed em `main`/`develop` |
 
 ## Instalação rápida
 
@@ -42,30 +42,48 @@ Reinicie o Claude Code para a skill ser detectada.
 ```bash
 ~/.claude/skills/pr-flow/scripts/apply.sh owner/repo
 ```
-Cria 3 labels, aplica branch protection em `main` e `develop`, imprime próximos passos para copiar o template de PR e o workflow.
+Cria 3 labels, aplica branch protection em `main` e `develop`, imprime próximos passos para copiar o template de PR.
 
 ### Antes de abrir novo PR
 ```bash
 ~/.claude/skills/pr-flow/scripts/check.sh
 # PR-FLOW OK               → pode abrir
-# PR-FLOW FAIL-CLOSED      → drene a fila antes
+# PR-FLOW WARN             → fila com muitos PRs, revise antes de abrir
+# PR-FLOW FAIL-CLOSED      → branch errada ou risco de governança
 ```
 
 ### Antes de qualquer `git commit`
 ```bash
 ~/.claude/skills/pr-flow/scripts/preflight-commit.sh
-# fail-close em main/develop, avisa conflitos com PRs ativos
+# fail-closed em main/develop, avisa conflitos com PRs ativos
 ```
+
+## Template de mensagem para o time
+
+Após abrir ou finalizar um PR, use o template em
+[src/templates/team-pr-message-template.md](src/templates/team-pr-message-template.md)
+para comunicar o time de forma padronizada.
+
+O template cobre:
+- Título e URL do PR
+- Resumo das mudanças em bullets
+- Ponto mais importante (mencionando o revisor)
+- Condição para merge/deploy
+- Validações realizadas
+- Riscos residuais conhecidos
+- Declaração explícita de fora de escopo
+
+**Regra de escrita:** sempre primeira pessoa do singular (`ajustei`, `removi`,
+`mantive`, `criei`). Nunca `ajustamos`, `removemos` ou `criamos`.
 
 ## Estrutura do repo
 
 ```
 ├── src/                           # código-fonte da skill (editável)
-│   ├── skill.md                   # entrypoint detectado pelo Claude Code
+│   ├── SKILL.md                   # entrypoint detectado pelo Claude Code
 │   ├── skill.yaml                 # metadata + limites + fail_closed
 │   ├── policies/                  # políticas de PR e merge (texto p/ equipe)
-│   ├── templates/                 # PULL_REQUEST_TEMPLATE, labels, branch-protection
-│   ├── workflows/                 # pr-limit.yml (copiado p/ repo gerenciado)
+│   ├── templates/                 # PULL_REQUEST_TEMPLATE, team-pr-message-template, labels, branch-protection
 │   └── scripts/                   # check.sh, apply.sh, preflight-commit.sh
 ├── dist/                          # artefato de release (regenerado em tag)
 │   ├── pr-flow.skill              # tarball gzip auto-contido
@@ -82,7 +100,7 @@ Ver [src/policies/pr-policy.md](src/policies/pr-policy.md) e [src/policies/merge
 
 ## Como contribuir
 
-1. `~/.claude/skills/pr-flow/scripts/check.sh IanVDev/claude-skill-pr-flow` — fail-close se já há 2 PRs abertos.
+1. `~/.claude/skills/pr-flow/scripts/check.sh IanVDev/claude-skill-pr-flow` — alerta se há acúmulo de PRs, bloqueia se branch errada.
 2. Branch `feature/`, `fix/`, `chore/`, `hotfix/` ou `docs/`.
 3. Edite `src/`. Se o comportamento da skill mudou, regenere `dist/pr-flow.skill` localmente antes do commit (ver abaixo).
 4. PR para `main` com body seguindo o template.
@@ -91,7 +109,7 @@ Ver [src/policies/pr-policy.md](src/policies/pr-policy.md) e [src/policies/merge
 
 ```bash
 cd src && tar czf ../dist/pr-flow.skill --transform 's|^|pr-flow/|' \
-  skill.md skill.yaml policies templates workflows scripts
+  SKILL.md skill.yaml policies templates scripts
 # atualize manifest.json com novo sha:
 SHA=$(shasum -a 256 ../dist/pr-flow.skill | awk '{print $1}')
 python3 -c "import json; m=json.load(open('../dist/manifest.json')); m['artifact_sha256']='$SHA'; json.dump(m, open('../dist/manifest.json','w'), indent=2)"
@@ -107,14 +125,14 @@ Release é **manual** (não automatizado) — mantém visibilidade de quem publi
 # 1. bump de versão em src/skill.yaml e dist/manifest.json
 # 2. regenere dist/ (ver acima) e commit
 # 3. tag + push
-git tag v1.0.1 && git push --tags
+git tag v1.1.0 && git push --tags
 # 4. criar release com assets:
-gh release create v1.0.1 \
+gh release create v1.1.0 \
   dist/pr-flow.skill \
   dist/manifest.json \
   dist/install.sh \
   dist/INSTALL.md \
-  --title "pr-flow v1.0.1" \
+  --title "pr-flow v1.1.0" \
   --notes "<changelog>"
 ```
 
