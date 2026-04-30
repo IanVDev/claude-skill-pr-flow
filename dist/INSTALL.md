@@ -53,17 +53,18 @@ template de PR.
 
 ```bash
 ~/.claude/skills/pr-flow/scripts/check.sh
-# PR-FLOW OK          — pode abrir
-# PR-FLOW WARN        — fila com muitos PRs, revise antes de abrir
-# PR-FLOW FAIL-CLOSED — branch errada ou risco de governanca
+# PR-FLOW OK          — pode abrir (todas as quatro regras passaram)
+# PR-FLOW FAIL-CLOSED — branch errada, escopo duplicado, conflito real,
+#                       sem testes ou risco critico sem aprovacao
 ```
 
 ### Antes de qualquer `git commit`
 
 ```bash
 ~/.claude/skills/pr-flow/scripts/preflight-commit.sh
-# imprime branch atual, staged files e avisos de conflito com PRs ativos
-# fail-closed se estiver em main/develop
+# imprime branch atual e staged files
+# fail-closed se em main/develop ou em violacao de qualquer das quatro regras:
+#   1. escopo duplicado  2. conflito real  3. sem testes  4. risco critico
 ```
 
 ## Uninstall

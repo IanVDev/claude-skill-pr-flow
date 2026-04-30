@@ -14,7 +14,10 @@ A `pr-flow` impõe:
 
 | Regra | Como |
 |---|---|
-| **Sem limite fixo de PRs.** Alerta quando ≥ 5 abertos | `check.sh` emite aviso informativo (não bloqueia) |
+| **Escopo duplicado bloqueado** — outro PR aberto toca os mesmos arquivos no mesmo branch alvo | `check.sh` / `preflight-commit.sh` fail-closed |
+| **Conflito real bloqueado** — `git merge-tree` detecta `<<<<<<<` | `check.sh` / `preflight-commit.sh` fail-closed |
+| **Testes obrigatórios** — diff em `src/` requer arquivo de teste alterado | `check.sh` / `preflight-commit.sh` fail-closed |
+| **Risco crítico bloqueado** — `auth`/`payment`/`billing`/`migration` sem `approved`/`lgtm`/`security-ok` | `check.sh` / `preflight-commit.sh` fail-closed |
 | **CI verde obrigatório** antes do merge | Branch protection em `main` e `develop` |
 | **1 review aprovada** mínima | Branch protection |
 | **Labels padronizadas** (`ready-to-merge`, `blocked`, `needs-review`) | Criadas via `gh label create --force` |
@@ -50,15 +53,15 @@ Cria 3 labels, aplica branch protection em `main` e `develop`, imprime próximos
 ### Antes de abrir novo PR
 ```bash
 ~/.claude/skills/pr-flow/scripts/check.sh
-# PR-FLOW OK               → pode abrir
-# PR-FLOW WARN             → fila com muitos PRs, revise antes de abrir
-# PR-FLOW FAIL-CLOSED      → branch errada ou risco de governança
+# PR-FLOW OK          → pode abrir (todas as regras passaram)
+# PR-FLOW FAIL-CLOSED → branch errada, escopo duplicado, conflito real,
+#                       sem testes ou risco critico sem aprovacao
 ```
 
 ### Antes de qualquer `git commit`
 ```bash
 ~/.claude/skills/pr-flow/scripts/preflight-commit.sh
-# fail-closed em main/develop, avisa conflitos com PRs ativos
+# fail-closed em main/develop e em violacao de qualquer das quatro regras
 ```
 
 ### Após abrir ou finalizar um PR (team-message)

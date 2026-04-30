@@ -1,7 +1,7 @@
 {
   "name": "pr-flow",
   "version": "1.1.1",
-  "description": "Governance skill para fluxo de Pull Requests — CI obrigatorio, labels, branch protection, preflight git-state, alerta de acumulo de PRs. Triggering otimizado.",
+  "description": "Governance skill para fluxo de Pull Requests — CI obrigatorio, labels, branch protection, preflight git-state, quatro regras de bloqueio substantivas.",
   "author": "Ian Vilhena <ianvilhena99@gmail.com>",
   "artifact": "pr-flow.skill",
   "artifact_sha256": "f66ba285ed158ae4d6172c1404dc6a0f9e2f1a5dfdf8efbc069b4bf5b00a43f2",
@@ -21,7 +21,6 @@
     "preflight-commit": "scripts/preflight-commit.sh"
   },
   "limits": {
-    "max_lines_for_small_pr": 200,
-    "pr_accumulation_warn_threshold": 5
+    "max_lines_for_small_pr": 200
   }
 }

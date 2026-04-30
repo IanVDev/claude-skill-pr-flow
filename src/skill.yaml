@@ -1,13 +1,15 @@
 name: pr-flow
 description: >
   Governance de PR: CI obrigatorio, labels padrao, branch protection,
-  preflight git-state, alerta de acumulo de PRs. Fail-closed em violacao
-  de governanca real.
-version: "1.1.1"
+  preflight git-state e quatro regras de bloqueio substantivas.
+  Fail-closed em violacao de governanca real.
+version: "1.2.0"
 
 actions:
   check:
-    description: Verifica branch, alerta acumulo de PRs (>=5), bloqueia branch errada
+    description: >
+      Verifica branch e aplica quatro regras de bloqueio antes de abrir PR:
+      escopo duplicado, conflito real, sem testes, risco critico sem aprovacao.
     entrypoint: scripts/check.sh
     fail_closed: true
   apply:
@@ -15,14 +17,29 @@ actions:
     entrypoint: scripts/apply.sh
     fail_closed: true
   preflight-commit:
-    description: Checklist pre-commit para evitar commit em branch errada
+    description: >
+      Checklist pre-commit: bloqueia branch errada e aplica as quatro regras
+      de bloqueio nos arquivos staged.
     entrypoint: scripts/preflight-commit.sh
     fail_closed: true
 
 limits:
-  pr_accumulation_warn_threshold: 5
   max_lines_for_small_pr: 200
   hotfix_override: requires_explicit_user_authorization
+
+blocking_rules:
+  duplicate_scope: >
+    Bloqueia se outro PR aberto modifica arquivos sobrepostos no mesmo
+    branch alvo.
+  real_conflict: >
+    Bloqueia se git merge-tree detecta marcadores de conflito (<<<<<<<)
+    contra origin/main.
+  no_tests: >
+    Bloqueia se diff toca src/ (logica) mas nenhum arquivo de teste
+    (tests/, __tests__/, *.test.*, *.spec.*) foi alterado.
+  critical_risk: >
+    Bloqueia se diff toca auth/payment/billing/migration sem label
+    approved, lgtm ou security-ok.
 
 required_labels:
   - ready-to-merge
